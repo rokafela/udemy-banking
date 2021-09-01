@@ -6,9 +6,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/rokafela/banking/app/modules/customer"
-	"github.com/rokafela/banking/app/modules/greet"
-	"github.com/rokafela/banking/app/modules/time"
+	"github.com/rokafela/udemy-banking/app/modules/customer"
+	"github.com/rokafela/udemy-banking/app/modules/greet"
+	"github.com/rokafela/udemy-banking/app/modules/time"
 )
 
 func Start() {

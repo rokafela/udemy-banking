@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/udemy-banking/app"
+	"github.com/rokafela/udemy-banking/app"
 )
 
 func main() {
