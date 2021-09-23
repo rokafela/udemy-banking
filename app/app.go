@@ -6,23 +6,20 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/rokafela/udemy-banking/app/modules/customer"
-	"github.com/rokafela/udemy-banking/app/modules/greet"
-	"github.com/rokafela/udemy-banking/app/modules/time"
+	"github.com/rokafela/udemy-banking/domain"
+	"github.com/rokafela/udemy-banking/service"
 )
 
 func Start() {
-	// mux := http.NewServeMux()
+	// router
 	router := mux.NewRouter()
 
+	// wiring
+	ch := CustomerHandlers{service.NewCustomerService(domain.NewCustomerRepositoryDb())}
+	// ch := CustomerHandlers{service.NewCustomerService(domain.NewRandomStub())}
+
 	// routes
-	router.HandleFunc("/greet", greet.Greet).Methods(http.MethodGet)
-
-	router.HandleFunc("/customers", customer.GetAllCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers", customer.CreateCustomer).Methods(http.MethodPost)
-	router.HandleFunc("/customers/{customer_id:[0-9]*}", customer.GetCustomerById).Methods(http.MethodGet)
-
-	router.HandleFunc("/api/time", time.GetCurrentTime).Methods(http.MethodGet)
+	router.HandleFunc("/customers", ch.GetAllCustomers).Methods(http.MethodGet)
 
 	// server
 	log.Fatal(http.ListenAndServe("localhost:8080", router))

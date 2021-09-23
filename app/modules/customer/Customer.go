@@ -9,14 +9,15 @@ import (
 )
 
 type Customer struct {
+	Id      string `json:"customer_id" xml:"customerId"`
 	Name    string `json:"full_name" xml:"fullName"`
 	City    string `json:"city" xml:"city"`
 	Zipcode string `json:"zip_code" xml:"zipCode"`
 }
 
 var Customers = []Customer{
-	{Name: "Arief", City: "Jakarta", Zipcode: "12510"},
-	{Name: "Darmawan", City: "Bogor", Zipcode: "16969"},
+	{Id: "1", Name: "Arief", City: "Jakarta", Zipcode: "12510"},
+	{Id: "2", Name: "Darmawan", City: "Bogor", Zipcode: "16969"},
 }
 
 func GetAllCustomers(w http.ResponseWriter, r *http.Request) {
@@ -31,13 +32,21 @@ func GetAllCustomers(w http.ResponseWriter, r *http.Request) {
 
 func GetCustomerById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	customerId := vars["customer_id"]
+	customerData := Customer{}
+
+	for _, value := range Customers {
+		if value.Id == customerId {
+			customerData = value
+		}
+	}
 
 	if r.Header.Get("Content-Type") == "application/xml" {
 		w.Header().Add("Content-Type", "application/xml")
-		xml.NewEncoder(w).Encode(vars)
+		xml.NewEncoder(w).Encode(customerData)
 	} else {
 		w.Header().Add("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(vars)
+		json.NewEncoder(w).Encode(customerData)
 	}
 }
 
