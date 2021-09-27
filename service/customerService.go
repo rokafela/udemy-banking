@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/rokafela/udemy-banking/domain"
-	errs "github.com/rokafela/udemy-banking/helpers"
+	"github.com/rokafela/udemy-banking/errs"
 )
 
 type CustomerService interface {
