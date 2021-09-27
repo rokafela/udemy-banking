@@ -2,24 +2,30 @@ package domain
 
 import (
 	"database/sql"
-	"errors"
 	"log"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/rokafela/udemy-banking/helpers"
+	errs "github.com/rokafela/udemy-banking/helpers"
 )
 
 type CustomerRepositoryDb struct {
 	client *sql.DB
 }
 
-func (d CustomerRepositoryDb) FindAll() ([]Customer, error) {
-	findAllSql := "SELECT customer_id, name, date_of_birth, city, zipcode, status FROM customers;"
+func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError) {
+	statusCond := ""
+	if status == "active" {
+		statusCond = "WHERE status = 1"
+	} else if status == "inactive" {
+		statusCond = "WHERE status = 0"
+	}
+
+	findAllSql := "SELECT customer_id, name, date_of_birth, city, zipcode, status FROM customers " + statusCond
 	rows, err := d.client.Query(findAllSql)
 	if err != nil {
 		log.Println("Error querying customers table" + err.Error())
-		return nil, err
+		return nil, errs.NewUnexpectedError("unexpected database error")
 	}
 
 	customers := make([]Customer, 0)
@@ -27,8 +33,8 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error) {
 		var c Customer
 		err := rows.Scan(&c.Id, &c.Name, &c.DateOfBirth, &c.City, &c.Zipcode, &c.Status)
 		if err != nil {
-			log.Println("Error querying customers table" + err.Error())
-			return nil, err
+			log.Println("Error scanning customers" + err.Error())
+			return nil, errs.NewUnexpectedError("unexpected database error")
 		}
 		customers = append(customers, c)
 	}
@@ -36,17 +42,17 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error) {
 	return customers, nil
 }
 
-func (d CustomerRepositoryDb) FindById(id string) (*Customer, error) {
+func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	findByIdSql := "SELECT customer_id, name, date_of_birth, city, zipcode, status FROM customers WHERE customer_id = ?;"
 	row := d.client.QueryRow(findByIdSql, id)
 	var c Customer
 	err := row.Scan(&c.Id, &c.Name, &c.DateOfBirth, &c.City, &c.Zipcode, &c.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, helpers.NewNotFoundError("customer not found")
+			return nil, errs.NewNotFoundError("customer not found")
 		} else {
 			log.Println("Error scanning customer" + err.Error())
-			return nil, errors.New("unexpected database error")
+			return nil, errs.NewUnexpectedError("unexpected database error")
 		}
 	}
 	return &c, nil

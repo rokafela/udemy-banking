@@ -1,5 +1,7 @@
 package domain
 
+import errs "github.com/rokafela/udemy-banking/helpers"
+
 // domain
 type Customer struct {
 	Id          string `json:"customer_id" xml:"customerId"`
@@ -12,6 +14,6 @@ type Customer struct {
 
 // secondary port
 type CustomerRepository interface {
-	FindAll() ([]Customer, error)
-	FindById(string) (*Customer, error)
+	FindAll(string) ([]Customer, *errs.AppError)
+	FindById(string) (*Customer, *errs.AppError)
 }

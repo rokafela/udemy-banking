@@ -1,21 +1,24 @@
 package service
 
-import "github.com/rokafela/udemy-banking/domain"
+import (
+	"github.com/rokafela/udemy-banking/domain"
+	errs "github.com/rokafela/udemy-banking/helpers"
+)
 
 type CustomerService interface {
-	GetAllCustomer() ([]domain.Customer, error)
-	GetCustomerById(string) (*domain.Customer, error)
+	GetAllCustomer(string) ([]domain.Customer, *errs.AppError)
+	GetCustomerById(string) (*domain.Customer, *errs.AppError)
 }
 
 type DefaultCustomerService struct {
 	repo domain.CustomerRepository
 }
 
-func (s DefaultCustomerService) GetAllCustomer() ([]domain.Customer, error) {
-	return s.repo.FindAll()
+func (s DefaultCustomerService) GetAllCustomer(status string) ([]domain.Customer, *errs.AppError) {
+	return s.repo.FindAll(status)
 }
 
-func (s DefaultCustomerService) GetCustomerById(id string) (*domain.Customer, error) {
+func (s DefaultCustomerService) GetCustomerById(id string) (*domain.Customer, *errs.AppError) {
 	return s.repo.FindById(id)
 }
 
