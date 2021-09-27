@@ -3,28 +3,16 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/rokafela/udemy-banking/service"
 )
 
 type CustomerHandlers struct {
 	service service.CustomerService
 }
-
-/*
-type Customer struct {
-	Id      string `json:"customer_id" xml:"customerId"`
-	Name    string `json:"full_name" xml:"fullName"`
-	City    string `json:"city" xml:"city"`
-	Zipcode string `json:"zip_code" xml:"zipCode"`
-}
-
-var Customers = []Customer{
-	{Id: "1", Name: "Arief", City: "Jakarta", Zipcode: "12510"},
-	{Id: "2", Name: "Darmawan", City: "Bogor", Zipcode: "16969"},
-}
-*/
 
 func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, r *http.Request) {
 	customers, _ := ch.service.GetAllCustomer()
@@ -35,5 +23,19 @@ func (ch *CustomerHandlers) GetAllCustomers(w http.ResponseWriter, r *http.Reque
 	} else {
 		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customers)
+	}
+}
+
+func (ch *CustomerHandlers) GetCustomerById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["customer_id"]
+
+	customer, err := ch.service.GetCustomerById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, err.Error())
+	} else {
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(customer)
 	}
 }

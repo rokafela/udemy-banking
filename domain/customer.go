@@ -13,4 +13,5 @@ type Customer struct {
 // secondary port
 type CustomerRepository interface {
 	FindAll() ([]Customer, error)
+	FindById(string) (*Customer, error)
 }

@@ -2,10 +2,12 @@ package domain
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/rokafela/udemy-banking/helpers"
 )
 
 type CustomerRepositoryDb struct {
@@ -32,6 +34,22 @@ func (d CustomerRepositoryDb) FindAll() ([]Customer, error) {
 	}
 
 	return customers, nil
+}
+
+func (d CustomerRepositoryDb) FindById(id string) (*Customer, error) {
+	findByIdSql := "SELECT customer_id, name, date_of_birth, city, zipcode, status FROM customers WHERE customer_id = ?;"
+	row := d.client.QueryRow(findByIdSql, id)
+	var c Customer
+	err := row.Scan(&c.Id, &c.Name, &c.DateOfBirth, &c.City, &c.Zipcode, &c.Status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, helpers.NewNotFoundError("customer not found")
+		} else {
+			log.Println("Error scanning customer" + err.Error())
+			return nil, errors.New("unexpected database error")
+		}
+	}
+	return &c, nil
 }
 
 func NewCustomerRepositoryDb() CustomerRepositoryDb {
