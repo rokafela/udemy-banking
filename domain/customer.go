@@ -1,19 +1,41 @@
 package domain
 
-import "github.com/rokafela/udemy-banking/errs"
+import (
+	"github.com/rokafela/udemy-banking/dto"
+	"github.com/rokafela/udemy-banking/errs"
+)
 
 // domain
 type Customer struct {
-	Id          string `json:"customer_id" xml:"customerId" db:"customer_id"`
-	Name        string `json:"full_name" xml:"fullName"`
-	City        string `json:"city" xml:"city"`
-	Zipcode     string `json:"zip_code" xml:"zipCode"`
-	DateOfBirth string `json:"date_of_birth" xml:"dateOfBirth" db:"date_of_birth"`
-	Status      string `json:"status" xml:"status"`
+	Id          string `db:"customer_id"`
+	Name        string ``
+	City        string ``
+	Zipcode     string ``
+	DateOfBirth string `db:"date_of_birth"`
+	Status      string ``
 }
 
 // secondary port
 type CustomerRepository interface {
 	FindAll(string) ([]Customer, *errs.AppError)
 	FindById(string) (*Customer, *errs.AppError)
+}
+
+func (c Customer) statusAsText() string {
+	customerStatus := "active"
+	if c.Status == "0" {
+		customerStatus = "inactive"
+	}
+	return customerStatus
+}
+
+func (c Customer) ToDto() dto.CustomerResponse {
+	return dto.CustomerResponse{
+		Id:          c.Id,
+		Name:        c.Name,
+		City:        c.City,
+		Zipcode:     c.Zipcode,
+		DateOfBirth: c.DateOfBirth,
+		Status:      c.statusAsText(),
+	}
 }
