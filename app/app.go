@@ -60,7 +60,7 @@ func Start() {
 	router.HandleFunc("/customers/{customer_id:[0-9]+}", ch.GetCustomerById).Methods(http.MethodGet)
 	router.HandleFunc("/customers/{customer_id:[0-9]+}/account", ah.CreateNewAccount).Methods(http.MethodPost)
 
-	router.HandleFunc("/transaction}", th.CallUseEcho).Methods(http.MethodGet)
+	router.HandleFunc("/transaction", th.CreateTransaction).Methods(http.MethodPost)
 
 	// server
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%s", os.Getenv("APP_ADDRESS"), os.Getenv("APP_PORT")), router))
